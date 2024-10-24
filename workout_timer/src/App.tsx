@@ -22,14 +22,13 @@ function SetUpTimer({workoutTime, setWorkoutTime, restTime, setRestTime, reps, s
   );
 }
 
-function Timer({workoutTime, restTime, reps}:
+function Timer({workoutTime, restTime, reps, setShowTimer}:
   {workoutTime: number;
-  restTime: number
-  reps: number}){
+  restTime: number;
+  reps: number;
+  setShowTimer: React.Dispatch<React.SetStateAction<boolean>>}){
     const [currTime, setCurrTime] = useState<number>(8000);
-    const [startTime, setSetStartTime] = useState<number>(Date.now());
     const [useWorkoutTime, setUseWorkoutTime] = useState<boolean>(true);
-    const [init, setInit] = useState<boolean>(false);
     const [completedReps, setCompletedReps] = useState<number>(0);
 
     let timer = Date.now();
@@ -53,14 +52,24 @@ function Timer({workoutTime, restTime, reps}:
       }, 100);
     
       return () => clearInterval(intervalId);
-    }, [useWorkoutTime, init, workoutTime, restTime, completedReps]);
+    }, [useWorkoutTime, workoutTime, restTime, completedReps]);
     
+    function reset(){
+      setCompletedReps(0);
+      setCurrTime(8000);
+    }
+
+    function returnToEdit(){
+      setShowTimer(false);
+      reset();
+    }
   
 
 
     return (
       <div>
-        {reps <= completedReps ? <div><h1>Good job!</h1></div> :
+        {reps <= completedReps ? <div><h1>Good job!</h1><button onClick={(e)=>returnToEdit()}>Edit Times</button> 
+        <button onClick={reset}>Reset</button></div> :
         <div><h1>{completedReps} of {reps} Repetitions Completed</h1>
         <h1><span style={{ fontSize: '100px' }}> {Math.floor(currTime / 1000)}</span> 
         <sup>{currTime % 1000 / 100}</sup> </h1></div>}
@@ -78,7 +87,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-      {showTimer ? <Timer workoutTime={workoutTime} restTime={restTime} reps={reps}/> : <SetUpTimer workoutTime={workoutTime} setWorkoutTime={setWorkoutTime}
+      {showTimer ? <Timer workoutTime={workoutTime} setShowTimer={setShowTimer} restTime={restTime} reps={reps}/> : <SetUpTimer workoutTime={workoutTime} setWorkoutTime={setWorkoutTime}
       restTime={restTime} setRestTime={setRestTime} reps={reps} setReps={setReps} setShowTimer={setShowTimer} />}
         
        
